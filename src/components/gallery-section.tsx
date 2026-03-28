@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform, useSpring } from "motion/react"
 import { useRef, useEffect, useState } from "react"
+import { Button } from "@/components/ui/button"
 
 type PhotoData = {
     id: string
@@ -41,9 +42,9 @@ const shuffleArray = <T,>(array: T[]): T[] => {
 const PhotoCard = ({ image, index }: { image: PhotoData, index: number }) => (
     <motion.div
         key={`${image.id}-${index}`} // Unique key for repeated items
-        className="w-96 h-60 rounded-3xl overflow-hidden bg-gray-200 shrink-0"
-        initial={{ opacity: 0, scale: 0.6, filter: "blur(10px)" }}
-        whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)" }}
+        className="w-96 h-60 rounded-3xl overflow-hidden bg-gray-200 shrink-0 ring-1 ring-black/5 shadow-md"
+        initial={{ opacity: 0, scale: 0.6, filter: "blur(10px)", z: 0 }}
+        whileInView={{ opacity: 1, scale: 1, filter: "blur(0px)", z: 0 }}
         transition={{ delay: index * 0.015, duration: 0.5, ease: "easeOut" }}
         viewport={{ once: true }}
     >
@@ -51,7 +52,7 @@ const PhotoCard = ({ image, index }: { image: PhotoData, index: number }) => (
             <img
                 src={image.src}
                 alt={image.alt}
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover scale-[1.02]"
                 style={{ objectPosition: getObjectPositionCSS(image.objectPosition || 'center') }}
             />
         ) : (
@@ -161,10 +162,16 @@ export function GallerySection() {
     const row3TranslateX = useSpring(row3TranslateXRaw, springConfig)
     const row4TranslateX = useSpring(row4TranslateXRaw, springConfig)
 
+    // Deslocar o grid para cima no final do scroll
+    const gridY = useTransform(scrollYProgress, [0.75, 1], ["0%", "-25%"])
+    // Animação do botão "Ver Galeria"
+    const buttonOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1])
+    const buttonY = useTransform(scrollYProgress, [0.85, 1], [30, 0])
+
     return (
         <section
             ref={containerRef}
-            className="relative min-h-[300vh] bg-white z-10 -mt-32"
+            className="relative min-h-[300vh] bg-white z-10 -mt-32 mb-24 md:mb-48"
         >
             {/* Scroll Anchor - Positioned to land where grid is fully visible */}
             <div id="galeria" className="absolute top-[50vh] w-full h-1 pointer-events-none" />
@@ -180,6 +187,8 @@ export function GallerySection() {
                         scale: gridScale,
                         filter: gridBlur,
                         rotate: -5,
+                        y: gridY,
+                        z: 0,
                     }}
                 >
                     {/* Row 1 - Scrolls Left (duplicated for loop effect) */}
@@ -223,6 +232,18 @@ export function GallerySection() {
                     </motion.div>
                 </motion.div>
 
+                {/* Botão Ver Galeria Animado - Abaixo do Grid dentro do Sticky */}
+                <motion.div
+                    className="absolute bottom-12 md:bottom-20 z-50 pointer-events-auto"
+                    style={{
+                        opacity: buttonOpacity,
+                        y: buttonY,
+                    }}
+                >
+                    <Button className="rounded-full shadow-lg bg-black hover:bg-neutral-900 text-white font-medium px-8 py-3 transition-all duration-300 hover:scale-105 active:scale-95">
+                        Ver Galeria
+                    </Button>
+                </motion.div>
 
             </div>
         </section>

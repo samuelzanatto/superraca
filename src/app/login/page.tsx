@@ -89,7 +89,7 @@ export default function LoginPage() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    className="peer w-full bg-black/5 border border-transparent focus:border-black/10 rounded-xl px-4 pt-6 pb-2 outline-none transition-all placeholder-transparent text-black"
+                                    className="peer w-full bg-black/5 border border-transparent focus:border-black/10 rounded-xl px-4 pt-6 pb-1 outline-none transition-all placeholder-transparent text-black"
                                     placeholder="Email"
                                     id="email"
                                 />
@@ -110,7 +110,7 @@ export default function LoginPage() {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="peer w-full bg-black/5 border border-transparent focus:border-black/10 rounded-xl px-4 pt-6 pb-2 outline-none transition-all placeholder-transparent text-black"
+                                    className="peer w-full bg-black/5 border border-transparent focus:border-black/10 rounded-xl px-4 pt-6 pb-1 outline-none transition-all placeholder-transparent text-black"
                                     placeholder="Senha"
                                     id="password"
                                 />
@@ -144,15 +144,6 @@ export default function LoginPage() {
                             )}
                         </Button>
                     </form>
-
-                    <div className="mt-8 text-center">
-                        <p className="text-xs text-black/40">
-                            Não tem uma conta?{" "}
-                            <Link href="#" className="text-black font-semibold hover:underline">
-                                Criar conta
-                            </Link>
-                        </p>
-                    </div>
                 </div>
 
                 {/* Back Button - Below Card */}
@@ -160,7 +151,7 @@ export default function LoginPage() {
                     <div className="flex items-center">
                         <ArrowLeft className="w-4 h-4 transition-transform duration-300 group-hover:-translate-x-2" />
                         <span className="max-w-0 overflow-hidden whitespace-nowrap opacity-0 group-hover:max-w-[150px] group-hover:opacity-100 group-hover:ml-2 transition-all duration-300 ease-out">
-                            Voltar para Home
+                            Voltar para o início
                         </span>
                     </div>
                 </Link>

@@ -12,10 +12,9 @@ import { usePathname } from "next/navigation"
 const navItems = [
     { label: "Início", href: "#home" },
     { label: "Galeria", href: "#galeria" },
-    { label: "Sobre", href: "#sobre" },
-    { label: "Serviços", href: "#servicos" },
-    { label: "Depoimentos", href: "#depoimentos" },
-    { label: "Equipe", href: "#equipe" },
+    { label: "W.M.B", href: "#wmb" },
+    { label: "PJD", href: "#pjd" },
+    { label: "Loja", href: "/loja" },
 ]
 
 export function Header() {
@@ -54,7 +53,7 @@ export function Header() {
                 ease: [0.22, 1, 0.36, 1],
             }}
         >
-            <nav className="relative max-w-[80%] mx-auto flex items-center justify-between">
+            <nav className="relative w-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32 mx-auto flex items-center justify-between">
                 <Link href="/" className="flex items-center group">
                     <img
                         src="/logo.png"
@@ -67,7 +66,8 @@ export function Header() {
                     <NavItems />
                 </div>
 
-                <div>
+                <div className="flex items-center gap-4 z-50">
+                    <LiveStatusButton />
                     <AuthenticationButton />
                 </div>
             </nav>
@@ -182,11 +182,54 @@ function AuthenticationButton() {
         <Link href="/login">
             <Button
                 variant="default"
-                className="bg-black hover:bg-black/90 text-white font-bold px-6 py-2 rounded-full transition-all duration-300 shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
+                className="bg-black hover:bg-black/90 text-white font-bold px-6 py-2 rounded-full transition-all duration-300 hover:scale-105 active:scale-95"
             >
-                Entrar
+                Acesse
             </Button>
         </Link>
+    )
+}
+
+function LiveStatusButton() {
+    const [liveData, setLiveData] = useState<{ isLive: boolean, url: string } | null>(null)
+
+    useEffect(() => {
+        const checkLiveStatus = async () => {
+            try {
+                const res = await fetch('/api/youtube-live')
+                if (res.ok) {
+                    const data = await res.json()
+                    setLiveData(data)
+                }
+            } catch (err) {
+                console.error("Erro ao checar status da live:", err)
+            }
+        }
+        
+        checkLiveStatus()
+        
+        // Verifica novamente a cada 5 minutos
+        const interval = setInterval(checkLiveStatus, 5 * 60 * 1000)
+        return () => clearInterval(interval)
+    }, [])
+
+    if (!liveData?.isLive) return null
+
+    return (
+        <a href={liveData.url} target="_blank" rel="noopener noreferrer">
+            <motion.div 
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                whileHover={{ scale: 1.05 }}
+                className="flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full font-bold text-xs md:text-sm shadow-md transition-all cursor-pointer"
+            >
+                <div className="relative flex h-2.5 w-2.5">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+                </div>
+                AO VIVO
+            </motion.div>
+        </a>
     )
 }
 

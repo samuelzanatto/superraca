@@ -139,7 +139,7 @@ export default function QuotesCMSPage() {
                                 <div className="p-2 bg-blue-50 text-blue-600 rounded-lg">
                                     <Quote className="w-5 h-5" />
                                 </div>
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity relative z-10 bg-white/95 backdrop-blur-md p-1 rounded-lg shadow-sm border border-gray-100 -mr-2 -mt-2">
                                     <button onClick={() => toggleActive(quote)} className={`p-2 rounded-full hover:bg-gray-100 ${quote.active ? 'text-green-600' : 'text-gray-400'}`}>
                                         <Eye className="w-4 h-4" />
                                     </button>

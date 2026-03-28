@@ -6,8 +6,8 @@ import Link from "next/link"
 
 const stats = [
     { label: "Cards na Landing", value: "12", icon: ImageIcon, change: "+2", href: "/admin/landing-cms" },
-    { label: "Fotos Galeria", value: "40", icon: Camera, change: "+8", href: "/admin/photos" },
-    { label: "Vídeos Kids", value: "48", icon: Video, change: "+5", href: "/admin/kids" },
+    { label: "Galeria", value: "40", icon: Camera, change: "+8", href: "/admin/photos" },
+    { label: "Kids", value: "48", icon: Video, change: "+5", href: "/admin/kids" },
     { label: "Usuários Ativos", value: "1.2k", icon: Users, change: "+128", href: "/admin/users" },
 ]
 

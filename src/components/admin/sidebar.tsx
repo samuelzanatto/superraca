@@ -33,17 +33,17 @@ const navItems = [
         icon: ImageIcon,
     },
     {
-        label: "Fotos Galeria",
+        label: "Galeria",
         href: "/admin/photos",
         icon: Camera,
     },
     {
-        label: "Kids Videos",
+        label: "Kids",
         href: "/admin/kids",
         icon: Video,
     },
     {
-        label: "Frases Hero",
+        label: "Frases",
         href: "/admin/quotes",
         icon: Quote,
     },

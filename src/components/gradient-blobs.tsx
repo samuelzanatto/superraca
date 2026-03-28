@@ -33,20 +33,6 @@ export function GradientBlobs() {
                 }}
             />
 
-            {/* Bottom-Right Gradient Blob */}
-            <motion.div
-                className="fixed bottom-0 right-0 w-[600px] h-[600px] bg-blue-900 rounded-full blur-[180px] pointer-events-none z-[1]"
-                style={{ transform: "translate(30%, 30%)" }}
-                initial={{ opacity: 0 }}
-                animate={{
-                    opacity: 0.25,
-                    scale: [1, 1.15, 1],
-                }}
-                transition={{
-                    scale: { duration: 12, repeat: Infinity, ease: "easeInOut", delay: 2 },
-                    opacity: { duration: 2, delay: 3.5, ease: "easeOut" }
-                }}
-            />
         </>
     )
 }
