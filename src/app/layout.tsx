@@ -24,8 +24,7 @@ export const metadata: Metadata = {
     apple: "/logo.png",
   },
   openGraph: {
-    title: "Super Raça | Excelência em Qualidade",
-    description: "Qualidade premium, atendimento excepcional e resultados que superam expectativas.",
+    title: "Super Raça",
     type: "website",
   },
 };
