@@ -40,14 +40,14 @@ function CardSlideContent({ card, index, onVideoRef, isActive, offset }: CardSli
         <motion.div
             className="absolute top-1/2 left-1/2"
             style={{
-                width: 320,
-                height: 480,
+                width: 600,
+                height: 400,
                 transformStyle: "preserve-3d",
             }}
             initial={false}
             animate={{
-                x: offset * 260 - 160,
-                y: -240,
+                x: offset * 320 - 300,
+                y: -200,
                 z: isActive ? 0 : -400,
                 rotateY: offset * -35,
                 scale: isActive ? 1 : 0.80,
