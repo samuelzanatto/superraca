@@ -4,6 +4,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from "motion/react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { Menu, X } from "lucide-react"
 
 import { useAuthStore } from "@/stores/auth-store"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -20,10 +21,9 @@ const navItems = [
 export function Header() {
     const { scrollY } = useScroll()
     const [hasScrolled, setHasScrolled] = useState(false)
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
 
     const pathname = usePathname()
-
-
 
     useEffect(() => {
         const unsubscribe = scrollY.on("change", (latest) => {
@@ -35,14 +35,13 @@ export function Header() {
     const isHome = pathname === "/"
 
     return (
+        <>
         <motion.header
-            className="fixed top-0 left-0 right-0 z-[110]"
+            className={`fixed top-0 left-0 right-0 z-[110] ${hasScrolled ? "py-1.5 md:py-2" : "py-2 md:py-4"}`}
             style={{
                 backgroundColor: hasScrolled ? "rgba(255, 255, 255, 0.8)" : "transparent",
                 backdropFilter: hasScrolled ? "blur(12px)" : "none",
                 borderBottom: hasScrolled ? "1px solid rgba(0,0,0,0.05)" : "1px solid transparent",
-                paddingTop: hasScrolled ? "0.5rem" : "1rem",
-                paddingBottom: hasScrolled ? "0.5rem" : "1rem",
                 transition: "background-color 0.3s, backdrop-filter 0.3s, border-bottom 0.3s, padding 0.3s",
                 display: isHome ? "block" : "none",
             }}
@@ -53,29 +52,70 @@ export function Header() {
                 ease: [0.22, 1, 0.36, 1],
             }}
         >
-            <nav className="relative w-full px-6 sm:px-12 md:px-16 lg:px-24 xl:px-32 mx-auto flex items-center justify-between">
+            <nav className="relative w-full px-4 sm:px-12 md:px-16 lg:px-24 xl:px-32 mx-auto flex items-center justify-between">
                 <Link href="/" className="flex items-center group">
                     <img
                         src="/logo.png"
                         alt="Super Raça"
-                        className="h-16 w-auto invert"
+                        className="h-10 md:h-16 w-auto invert"
                     />
                 </Link>
 
                 <div className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-1">
-                    <NavItems />
+                    <NavItems onSelect={() => {}} />
                 </div>
 
-                <div className="flex items-center gap-4 z-50">
+                <div className="hidden md:flex items-center gap-4 z-50">
                     <LiveStatusButton />
                     <AuthenticationButton />
                 </div>
+
+                <div className="flex md:hidden items-center z-50">
+                    <button 
+                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} 
+                        className="p-2 text-black hover:bg-black/5 rounded-full transition-colors"
+                        aria-label="Menu"
+                    >
+                        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                </div>
             </nav>
         </motion.header>
+
+        {/* Menu Mobile — fora do header para backdrop-filter funcionar */}
+        {isHome && (
+            <AnimatePresence>
+                {isMobileMenuOpen && (
+                    <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="md:hidden fixed left-0 right-0 z-[109] bg-white/60 backdrop-blur-2xl border-b border-black/5 overflow-hidden shadow-lg"
+                        style={{
+                            top: hasScrolled ? "calc(0.35rem * 2 + 2.5rem)" : "calc(0.5rem * 2 + 2.5rem)",
+                            transition: "top 0.3s",
+                        }}
+                    >
+                        <div className="flex flex-col items-center py-4 px-4 gap-3">
+                            <NavItems onSelect={() => setIsMobileMenuOpen(false)} isMobile />
+                            <div className="w-full h-px bg-black/10 my-1" />
+                            <div className="flex flex-col items-center gap-3 w-full">
+                                <LiveStatusButton />
+                                <div className="w-full text-center" onClick={() => setIsMobileMenuOpen(false)}>
+                                    <AuthenticationButton />
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        )}
+        </>
     )
 }
 
-function NavItems() {
+function NavItems({ onSelect, isMobile }: { onSelect: () => void, isMobile?: boolean }) {
     const [activeSection, setActiveSection] = useState("home") // Start with home active
 
     useEffect(() => {
@@ -119,12 +159,13 @@ function NavItems() {
                     <Link
                         key={item.label}
                         href={item.href}
+                        onClick={onSelect}
                         className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 group ${isActive ? "text-black" : "text-black/60 hover:text-black"
-                            }`}
+                            } ${isMobile ? "text-base font-bold w-full text-center py-2.5" : ""}`}
                     >
                         {item.label}
                         {/* Hover Active State */}
-                        <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-black transition-all duration-300 ease-out ${isActive ? "w-3/4" : "w-0 group-hover:w-1/2"}`} />
+                        <span className={`absolute bottom-0 left-1/2 -translate-x-1/2 h-0.5 bg-black transition-all duration-300 ease-out ${isActive ? "w-3/4" : "w-0 group-hover:w-1/2"} ${isMobile ? "hidden" : ""}`} />
                     </Link>
                 )
             })}

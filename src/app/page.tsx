@@ -8,7 +8,7 @@ import { PjdYoutube } from "@/components/pjd-youtube";
 
 export default function Home() {
   return (
-    <main className="relative">
+    <main className="relative overflow-x-hidden">
       {/* Immersive Gradient Blobs - Fixed position, bleeds across all sections */}
       <GradientBlobs />
 

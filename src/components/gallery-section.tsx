@@ -135,26 +135,27 @@ export function GallerySection() {
     // Track scroll progress within this section
     const { scrollYProgress } = useScroll({
         target: containerRef,
-        offset: ["start start", "end end"]
+        offset: ["start end", "end end"]
     })
 
-    // Grid fades in gradually as user scrolls - 25% of scroll for visible transition
-    const gridOpacity = useTransform(scrollYProgress, [0, 0.25], [0, 1])
-    const gridScale = useTransform(scrollYProgress, [0, 0.25], [0.7, 1])
+    // Grid fades in gradually — starts early so photos are visible sooner
+    const gridOpacity = useTransform(scrollYProgress, [0.05, 0.25], [0, 1])
+    const gridScale = useTransform(scrollYProgress, [0.05, 0.25], [0.7, 1])
 
     // Blur effect synced with opacity/scale transition
     const gridBlur = useTransform(
         scrollYProgress,
-        [0, 0.25],
+        [0.05, 0.25],
         ["blur(20px)", "blur(0px)"]
     )
 
     // Continuous scroll with spring physics for smooth movement
+    // Reduced translation ranges for mobile viewport compatibility
     const springConfig = { stiffness: 100, damping: 30, mass: 1 }
-    const row1TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["5%", "-15%"])
-    const row2TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["-5%", "12%"])
-    const row3TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["8%", "-12%"])
-    const row4TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["-3%", "10%"])
+    const row1TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["3%", "-10%"])
+    const row2TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["-3%", "8%"])
+    const row3TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["5%", "-8%"])
+    const row4TranslateXRaw = useTransform(scrollYProgress, [0, 1], ["-2%", "7%"])
 
     // Apply spring to smooth out the movement
     const row1TranslateX = useSpring(row1TranslateXRaw, springConfig)
@@ -162,26 +163,26 @@ export function GallerySection() {
     const row3TranslateX = useSpring(row3TranslateXRaw, springConfig)
     const row4TranslateX = useSpring(row4TranslateXRaw, springConfig)
 
-    // Deslocar o grid para cima no final do scroll
-    const gridY = useTransform(scrollYProgress, [0.75, 1], ["0%", "-25%"])
+    // Shift grid up at end of scroll — reduced to prevent premature disappearance
+    const gridY = useTransform(scrollYProgress, [0.7, 1], ["0%", "-12%"])
     // Animação do botão "Ver Galeria"
-    const buttonOpacity = useTransform(scrollYProgress, [0.85, 1], [0, 1])
-    const buttonY = useTransform(scrollYProgress, [0.85, 1], [30, 0])
+    const buttonOpacity = useTransform(scrollYProgress, [0.65, 0.85], [0, 1])
+    const buttonY = useTransform(scrollYProgress, [0.65, 0.85], [30, 0])
 
     return (
         <section
             ref={containerRef}
-            className="relative min-h-[300vh] bg-white z-10 -mt-32 mb-24 md:mb-48"
+            className="relative min-h-[150vh] md:min-h-[150vh] bg-white z-10"
         >
             {/* Scroll Anchor - Positioned to land where grid is fully visible */}
             <div id="galeria" className="absolute top-[50vh] w-full h-1 pointer-events-none" />
 
             {/* Sticky container for the grid - overflow visible for immersive effect */}
-            <div className="sticky top-0 h-screen overflow-visible flex items-center justify-center">
+            <div className="sticky top-20 md:top-24 h-[calc(100vh-80px)] overflow-visible flex flex-col items-center pt-[18vh] md:pt-[22vh]">
 
                 {/* Photo Grid - Tilted, Infinite Loop Appearance, 4 Rows */}
                 <motion.div
-                    className="flex flex-col gap-6 items-center justify-center"
+                    className="flex flex-col gap-6 items-center justify-center shrink-0"
                     style={{
                         opacity: gridOpacity,
                         scale: gridScale,
@@ -191,50 +192,50 @@ export function GallerySection() {
                         z: 0,
                     }}
                 >
-                    {/* Row 1 - Scrolls Left (duplicated for loop effect) */}
+                    {/* Row 1 - Scrolls Left */}
                     <motion.div
-                        className="flex gap-6"
+                        className="flex gap-4 md:gap-6"
                         style={{ x: row1TranslateX }}
                     >
-                        {[...row1Photos, ...row1Photos].map((image, index) => (
-                            <PhotoCard key={`r1-${index}`} image={image} index={index % row1Photos.length} />
+                        {row1Photos.map((image, index) => (
+                            <PhotoCard key={`r1-${index}`} image={image} index={index} />
                         ))}
                     </motion.div>
 
-                    {/* Row 2 - Scrolls Right (duplicated for loop effect) */}
+                    {/* Row 2 - Scrolls Right */}
                     <motion.div
-                        className="flex gap-6"
+                        className="flex gap-4 md:gap-6"
                         style={{ x: row2TranslateX }}
                     >
-                        {[...row2Photos, ...row2Photos].map((image, index) => (
-                            <PhotoCard key={`r2-${index}`} image={image} index={index % row2Photos.length} />
+                        {row2Photos.map((image, index) => (
+                            <PhotoCard key={`r2-${index}`} image={image} index={index} />
                         ))}
                     </motion.div>
 
-                    {/* Row 3 - Scrolls Left (duplicated for loop effect) */}
+                    {/* Row 3 - Scrolls Left */}
                     <motion.div
-                        className="flex gap-6"
+                        className="flex gap-4 md:gap-6"
                         style={{ x: row3TranslateX }}
                     >
-                        {[...row3Photos, ...row3Photos].map((image, index) => (
-                            <PhotoCard key={`r3-${index}`} image={image} index={index % row3Photos.length} />
+                        {row3Photos.map((image, index) => (
+                            <PhotoCard key={`r3-${index}`} image={image} index={index} />
                         ))}
                     </motion.div>
 
-                    {/* Row 4 - Scrolls Right (duplicated for loop effect) */}
+                    {/* Row 4 - Scrolls Right */}
                     <motion.div
-                        className="flex gap-6"
+                        className="flex gap-4 md:gap-6"
                         style={{ x: row4TranslateX }}
                     >
-                        {[...row4Photos, ...row4Photos].map((image, index) => (
-                            <PhotoCard key={`r4-${index}`} image={image} index={index % row4Photos.length} />
+                        {row4Photos.map((image, index) => (
+                            <PhotoCard key={`r4-${index}`} image={image} index={index} />
                         ))}
                     </motion.div>
                 </motion.div>
 
-                {/* Botão Ver Galeria Animado - Abaixo do Grid dentro do Sticky */}
+                {/* Botão Ver Galeria Animado - Fixo logo abaixo do grid */}
                 <motion.div
-                    className="absolute bottom-12 md:bottom-20 z-50 pointer-events-auto"
+                    className="mt-6 md:mt-12 z-50 pointer-events-auto shrink-0"
                     style={{
                         opacity: buttonOpacity,
                         y: buttonY,

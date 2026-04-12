@@ -203,7 +203,7 @@ function TimelineEvent({ event, index, total, isLast, scrollYProgress, dotThresh
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, type: "spring", stiffness: 80 }}
-            viewport={{ margin: "0px 0px -60% 0px" }}
+            viewport={{ once: true, margin: "0px 0px -15% 0px" }}
         >
             <span className="inline-block px-4 py-1 mb-4 text-xl tracking-widest text-gray-500 rounded-full border border-gray-200">
                 {event.year}
@@ -222,7 +222,7 @@ function TimelineEvent({ event, index, total, isLast, scrollYProgress, dotThresh
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            viewport={{ margin: "0px 0px -60% 0px" }}
+            viewport={{ once: true, margin: "0px 0px -15% 0px" }}
         >
             <img
                 src={event.image}

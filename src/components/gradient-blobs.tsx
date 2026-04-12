@@ -17,10 +17,10 @@ import { motion } from "motion/react"
  */
 export function GradientBlobs() {
     return (
-        <>
+        <div className="fixed inset-0 overflow-hidden pointer-events-none z-[1]">
             {/* Top-Left Gradient Blob */}
             <motion.div
-                className="fixed top-0 left-0 w-[500px] h-[500px] bg-blue-900 rounded-full blur-[150px] pointer-events-none z-[1]"
+                className="absolute top-0 left-0 w-[300px] h-[300px] md:w-[500px] md:h-[500px] bg-blue-900 rounded-full blur-[150px]"
                 style={{ transform: "translate(-30%, -30%)" }}
                 initial={{ opacity: 0 }}
                 animate={{
@@ -32,7 +32,6 @@ export function GradientBlobs() {
                     opacity: { duration: 2, delay: 3, ease: "easeOut" }
                 }}
             />
-
-        </>
+        </div>
     )
 }

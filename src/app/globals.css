@@ -155,6 +155,7 @@
   html {
     scrollbar-width: thin;
     scrollbar-color: #000 transparent;
+    overflow-x: hidden;
   }
 
   /* Restore cursor for inputs and textareas */

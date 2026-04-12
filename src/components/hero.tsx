@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from "motion/react"
 import { useState, useEffect, useRef } from "react"
+import { AutoTextSize } from "auto-text-size"
 import { CometCard } from "@/components/ui/comet-card"
 import Image from "next/image"
 import { Loader2 } from "lucide-react"
@@ -13,8 +14,6 @@ const getYoutubeId = (url: string) => {
     return (match && match[2].length === 11) ? match[2] : null;
 }
 
-
-
 type CardMedia = {
     id: string
     type: "image" | "video"
@@ -22,8 +21,6 @@ type CardMedia = {
     title: string
     code: string
 }
-
-
 
 type CardSlideContentProps = {
     card: CardMedia
@@ -35,26 +32,40 @@ type CardSlideContentProps = {
 
 function CardSlideContent({ card, index, onVideoRef, isActive, offset }: CardSlideContentProps) {
     const youtubeId = card.type === 'video' ? getYoutubeId(card.src) : null;
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 767px)")
+        setIsMobile(mq.matches)
+        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+        mq.addEventListener("change", handler)
+        return () => mq.removeEventListener("change", handler)
+    }, [])
 
     return (
         <motion.div
-            className="absolute top-1/2 left-1/2"
+            className="absolute top-1/2 left-1/2 w-[85vw] sm:w-[500px] lg:w-[600px] aspect-[3/2]"
             style={{
-                width: 600,
-                height: 400,
                 transformStyle: "preserve-3d",
             }}
             initial={false}
             animate={{
-                x: offset * 320 - 300,
-                y: -200,
-                z: isActive ? 0 : -400,
-                rotateY: offset * -35,
-                scale: isActive ? 1 : 0.80,
-                opacity: isActive ? 1 : 0.4,
+                x: isMobile
+                    ? `calc(${offset * 110}% - 50%)`
+                    : `calc(${offset * 60}% - 50%)`,
+                y: "-50%",
+                z: isMobile ? 0 : (isActive ? 0 : -400),
+                rotateY: isMobile ? 0 : offset * -35,
+                scale: isMobile ? 0.92 : (isActive ? 1 : 0.80),
+                opacity: isMobile ? (isActive ? 1 : 0) : (isActive ? 1 : 0.4),
                 zIndex: isActive ? 30 : 10,
             }}
-            transition={{
+            transition={isMobile ? {
+                type: "tween",
+                duration: 0.4,
+                ease: [0.25, 1, 0.5, 1],
+                opacity: { duration: 0.25 },
+            } : {
                 type: "spring",
                 stiffness: 50,
                 damping: 20,
@@ -65,7 +76,7 @@ function CardSlideContent({ card, index, onVideoRef, isActive, offset }: CardSli
         >
             <div className={`w-full h-full transition-all duration-700 ${isActive ? "blur-0" : "blur-[2px] grayscale-[50%]"
                 }`}>
-                <CometCard className="w-full h-full shadow-2xl">
+                <CometCard className="w-full h-full shadow-none md:shadow-2xl">
                     <div className="relative w-full h-full bg-[#1a1a1a] rounded-2xl overflow-hidden group">
                         <div className="absolute inset-0 w-full h-full">
                             {card.type === "image" ? (
@@ -140,6 +151,99 @@ function CardSlideContent({ card, index, onVideoRef, isActive, offset }: CardSli
                     </div>
                 </CometCard>
             </div>
+        </motion.div>
+    )
+}
+
+/**
+ * QuoteAutoFit — Production-grade component
+ * 
+ * Mobile: Uses auto-text-size library (ResizeObserver + binary search) 
+ * to dynamically fit quote text into a flex-1 container.
+ * The parent hero uses h-dvh + flex-col so the quote area always
+ * fills remaining space after the fixed-height carousel.
+ * Result: zero layout shift, zero text clipping.
+ *
+ * Desktop: Original layout animation with popLayout preserved.
+ */
+function QuoteAutoFit({ quotes, currentQuoteIndex }: {
+    quotes: { book: string, phrase: string, author: string }[]
+    currentQuoteIndex: number
+}) {
+    const [isMobile, setIsMobile] = useState(false)
+
+    useEffect(() => {
+        const mq = window.matchMedia("(max-width: 767px)")
+        setIsMobile(mq.matches)
+        const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches)
+        mq.addEventListener("change", handler)
+        return () => mq.removeEventListener("change", handler)
+    }, [])
+
+    if (isMobile) {
+        return (
+            <div className="flex flex-col justify-center w-full h-full">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={currentQuoteIndex}
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        transition={{ duration: 0.35, ease: [0.25, 1, 0.5, 1] }}
+                        className="w-full h-full flex flex-col justify-center"
+                    >
+                        <p className="text-sm font-semibold text-black/70 mb-2">
+                            {quotes[currentQuoteIndex]?.book}
+                        </p>
+                        <div className="flex-1 min-h-0 flex items-center">
+                            <AutoTextSize
+                                mode="box"
+                                minFontSizePx={16}
+                                maxFontSizePx={32}
+                                as="h1"
+                                className="font-black text-black leading-[1.2] w-full"
+                            >
+                                &ldquo;{quotes[currentQuoteIndex]?.phrase}&rdquo;
+                            </AutoTextSize>
+                        </div>
+                        <p className="text-sm font-medium text-black/60 mt-2">
+                            — {quotes[currentQuoteIndex]?.author}
+                        </p>
+                    </motion.div>
+                </AnimatePresence>
+            </div>
+        )
+    }
+
+    // Desktop: original layout animation — untouched
+    return (
+        <motion.div layout className="relative flex flex-col justify-center">
+            <AnimatePresence mode="popLayout">
+                <motion.div
+                    key={currentQuoteIndex}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{
+                        opacity: { duration: 0.5 },
+                        delay: 0.6,
+                        duration: 0.8
+                    }}
+                    layout
+                >
+                    <p className="text-xl font-semibold text-black/70 mb-4">
+                        {quotes[currentQuoteIndex]?.book}
+                    </p>
+                    <h1
+                        className="font-black text-black leading-tight mb-6 text-[2.75rem] lg:text-4xl"
+                    >
+                        &ldquo;{quotes[currentQuoteIndex]?.phrase}&rdquo;
+                    </h1>
+                    <p className="text-xl font-medium text-black/60">
+                        — {quotes[currentQuoteIndex]?.author}
+                    </p>
+                </motion.div>
+            </AnimatePresence>
         </motion.div>
     )
 }
@@ -233,58 +337,28 @@ export function Hero() {
         setCurrentCardIndex((prev) => (prev - 1 + cards.length) % cards.length)
     }
 
-
-
-    // ... restante do return (igual ao anterior)
     return (
         <section
             id="home"
-            className="relative z-20 min-h-screen flex items-center bg-white"
+            className="relative z-20 h-dvh lg:min-h-screen flex items-center bg-white overflow-hidden py-0 lg:py-0"
         >
             {/* Gradientes agora estão em page.tsx */}
 
-            <div className="relative z-10 w-full mx-auto flex flex-col lg:flex-row items-center justify-between gap-16 px-6 lg:px-12">
+            <div className="relative z-10 w-full h-full mx-auto flex flex-col lg:flex-row items-center justify-between gap-0 lg:gap-16 px-6 lg:px-12 pt-20 pb-6 lg:pt-0 lg:pb-0">
                 {/* --- LADO ESQUERDO: TEXTO --- */}
-                <div className="w-full lg:w-1/2 flex flex-col items-center justify-center">
-                    <div className="w-full max-w-2xl">
+                <div className="w-full lg:w-1/2 flex flex-col items-center justify-center flex-1 lg:flex-none min-h-0">
+                    <div className="w-full max-w-2xl h-full lg:h-auto flex flex-col">
                         {quotes.length > 0 && (
-                            <motion.div layout className="relative flex flex-col justify-center">
-                                <AnimatePresence mode="popLayout">
-                                    <motion.div
-                                        key={currentQuoteIndex}
-                                        initial={{ opacity: 0 }}
-                                        animate={{ opacity: 1 }}
-                                        exit={{ opacity: 0 }}
-                                        transition={{
-                                            // Exit fading
-                                            opacity: { duration: 0.5 },
-                                            // Entry delayed to let layout resize first
-                                            delay: 0.6,
-                                            duration: 0.8
-                                        }}
-                                        layout
-                                    >
-                                        <p className="text-lg md:text-xl font-semibold text-black/70 mb-4">
-                                            {quotes[currentQuoteIndex]?.book}
-                                        </p>
-                                        <h1
-                                            className="font-black text-black leading-tight mb-6"
-                                            style={{
-                                                fontSize: `clamp(1.5rem, ${Math.max(2, 4 - (quotes[currentQuoteIndex]?.phrase?.length || 0) / 40)}rem, 3rem)`
-                                            }}
-                                        >
-                                            "{quotes[currentQuoteIndex]?.phrase}"
-                                        </h1>
-                                        <p className="text-lg md:text-xl font-medium text-black/60">
-                                            — {quotes[currentQuoteIndex]?.author}
-                                        </p>
-                                    </motion.div>
-                                </AnimatePresence>
-                            </motion.div>
+                            <div className="flex-1 min-h-0 lg:flex-none">
+                                <QuoteAutoFit
+                                    quotes={quotes}
+                                    currentQuoteIndex={currentQuoteIndex}
+                                />
+                            </div>
                         )}
 
                         {/* Barrinhas de progresso */}
-                        <div className="flex gap-2 mt-10">
+                        <div className="flex gap-2 mt-3 lg:mt-10 flex-shrink-0">
                             {quotes.map((_, index) => (
                                 <motion.div
                                     key={index}
@@ -301,12 +375,12 @@ export function Hero() {
 
                 {/* --- LADO DIREITO: CARROSSEL --- */}
                 <div
-                    className="hidden lg:flex w-full lg:w-1/2 flex-col items-center justify-center gap-8"
+                    className="flex w-full lg:w-1/2 flex-col items-center justify-center gap-2 lg:gap-8 flex-shrink-0"
                     onMouseEnter={() => setIsHovering(true)}
                     onMouseLeave={() => setIsHovering(false)}
                 >
                     <motion.div
-                        className="relative w-full h-[500px] flex items-center justify-center overflow-visible"
+                        className="relative w-full h-[350px] md:h-[500px] flex items-center justify-center overflow-hidden md:overflow-visible"
                         style={{ perspective: "1000px" }}
                         initial={{ opacity: 0, scale: 0.95, filter: "blur(20px)" }}
                         animate={{ opacity: 1, scale: 1, filter: "blur(0px)" }}

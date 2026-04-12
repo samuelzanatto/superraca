@@ -30,13 +30,13 @@ export function StoreProductsSection() {
         </div>
 
         {/* Badges de Navegação Horizontal */}
-        <div className="flex gap-2 p-1 overflow-x-auto bg-gray-100/50 backdrop-blur-sm rounded-full w-full justify-start md:w-auto md:justify-center no-scrollbar overscroll-x-contain">
+        <div className="flex gap-1 md:gap-2 p-1 overflow-x-auto bg-gray-100/50 backdrop-blur-sm rounded-full w-full justify-start md:w-auto md:justify-center no-scrollbar overscroll-x-contain">
           {CATEGORIES.map((category) => (
             <button
               key={category}
               onClick={() => setSelectedCategory(category)}
               className={cn(
-                "whitespace-nowrap rounded-full px-5 py-2.5 text-sm font-bold transition-all duration-300",
+                "whitespace-nowrap rounded-full px-4 py-2 md:px-5 md:py-2.5 text-xs md:text-sm font-bold transition-all duration-300",
                 selectedCategory === category
                   ? "bg-black text-white shadow-md scale-100"
                   : "text-gray-600 hover:text-black hover:bg-white scale-95"
