@@ -13,6 +13,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/loja",
+        destination: "https://store.superraca.com",
+        permanent: true,
+      },
+      {
+        source: "/loja/:path*",
+        destination: "https://store.superraca.com",
+        permanent: true,
+      },
+    ];
+  },
   devIndicators: false,
 };
 

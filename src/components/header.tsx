@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, useScroll, useTransform, AnimatePresence } from "motion/react"
+import { motion, useScroll, AnimatePresence } from "motion/react"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { useEffect, useState } from "react"
@@ -15,7 +15,7 @@ const navItems = [
     { label: "Galeria", href: "#galeria" },
     { label: "W.M.B", href: "#wmb" },
     { label: "PJD", href: "#pjd" },
-    { label: "Loja", href: "/loja" },
+    { label: "Loja", href: "https://store.superraca.com", external: true },
 ]
 
 export function Header() {
@@ -120,7 +120,9 @@ function NavItems({ onSelect, isMobile }: { onSelect: () => void, isMobile?: boo
 
     useEffect(() => {
         const handleScroll = () => {
-            const sections = navItems.map(item => item.href.substring(1))
+            const sections = navItems
+                .filter(item => item.href.startsWith("#"))
+                .map(item => item.href.substring(1))
             const scrollPosition = window.scrollY + 100 // Offset
 
             for (const section of sections) {
@@ -153,12 +155,14 @@ function NavItems({ onSelect, isMobile }: { onSelect: () => void, isMobile?: boo
 
     return (
         <>
-            {navItems.map((item, index) => {
-                const isActive = activeSection === item.href.substring(1)
+            {navItems.map((item) => {
+                const isActive = item.href.startsWith("#") && activeSection === item.href.substring(1)
                 return (
                     <Link
                         key={item.label}
                         href={item.href}
+                        target={item.external ? "_blank" : undefined}
+                        rel={item.external ? "noopener noreferrer" : undefined}
                         onClick={onSelect}
                         className={`relative px-4 py-2 text-sm font-medium transition-all duration-200 group ${isActive ? "text-black" : "text-black/60 hover:text-black"
                             } ${isMobile ? "text-base font-bold w-full text-center py-2.5" : ""}`}
